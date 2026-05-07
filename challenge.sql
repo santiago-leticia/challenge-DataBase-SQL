@@ -111,7 +111,12 @@ CONSTRAINT fk_con_prescricao FOREIGN KEY (id_prescricao) REFERENCES T_CLYVO_PRES
 //entrada do usuario ao sistema 
 
 DECLARE 
-    CURSOR
+    CURSOR c_vet IS SELECT email, senha FROM T_CLYVO_VET;
+    v_email VARCHAR(254) := '&email';
+    v_senha VARCHAR(60) :='&senha';
+BEGIN
+
+END;
 
 //cadastrar a consulta - opcao se tem o animal no banco de dados e se nao tem e ai tem que criar
 
