@@ -127,6 +127,606 @@ dt_usuario DATE,
 codigo_erro NUMBER(2),
 mensagem_erro VARCHAR(200)
 );
+//PROCEDURE
+
+//Vet
+CREATE OR REPLACE PROCEDURE dados_vet(
+    p_nm_vet VARCHAR2,
+    p_cpf_vet VARCHAR2,
+    p_crmv_vet VARCHAR2,
+    p_email VARCHAR2,
+    p_senha VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_VET
+    (id_vet,
+    nm_vet,
+    cpf_vet, 
+    crmv_vet, 
+    email,
+    senha)
+    VALUES (
+        p_nm_vet,
+        p_cpf_vet,
+        p_crmv_vet,
+        p_email,
+        p_senha
+    );
+    
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'inserir_tutor',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro no valor'
+            );
+    END dados_vet;
+    
+// endereco clinica
+CREATE OR REPLACE PROCEDURE dados_endereco_clinica(
+    p_pais VARCHAR2,
+    p_estado VARCHAR2,
+    p_cidade VARCHAR2,
+    p_bairro VARCHAR2,
+    p_logradouro_rua VARCHAR2,
+    p_nr_rua VARCHAR2,
+    p_completo VARCHAR2,
+    p_cep VARCHAR2,
+    p_tipo VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_ENDERECO_CLINICA
+    (
+    pais,
+    estado, 
+    cidade, 
+    bairro,
+    logradouro_rua,
+    nr_rua,
+    completo,
+    cep,
+    tipo
+    )
+    VALUES (
+        p_pais,
+        p_estado,
+        p_cidade,
+        p_bairro,
+        p_logradouro_rua,
+        p_nr_rua,
+        p_completo,
+        p_cep,
+        p_tipo
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Endereco da clinica',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_endereco_clinica;
+
+
+//clinica
+
+CREATE OR REPLACE PROCEDURE dados_clinica(
+    p_cnpj_clinica VARCHAR2,
+    p_nm_clinica VARCHAR2,
+    p_id_endereco_clinica VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_CLINICA
+    (
+    cnpj_clinica,
+    nm_clinica, 
+    id_endereco_clinica
+    )
+    VALUES (
+        p_id_clinica,
+        p_cnpj_clinica,
+        p_nm_clinica,
+        p_id_endereco_clinica
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erros em inserir os dados da clinica',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_clinica;
+
+//Tutor Animal
+CREATE OR REPLACE PROCEDURE dados_tutor(
+    p_id_tutor VARCHAR2,
+    p_cpf_tutor VARCHAR2,
+    p_nm_tutor VARCHAR2,
+    p_nr_telefone_tutor VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_TUTOR
+    (id_tutor,
+    cpf_tutor,
+    nm_tutor, 
+    nr_telefone_tutor
+    )
+    VALUES (
+        p_id_tutor,
+        p_cpf_tutor,
+        p_nm_tutor,
+        p_nr_telefone_tutor
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erro no Tutor',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_tutor;
+
+//Endereco Usuario
+
+CREATE OR REPLACE PROCEDURE dados_endereco_usuario(
+    p_pais VARCHAR2,
+    p_estado VARCHAR2,
+    p_cidade VARCHAR2,
+    p_bairro VARCHAR2,
+    p_logradouro_rua VARCHAR2,
+    p_nr_rua VARCHAR2,
+    p_completo VARCHAR2,
+    p_cep VARCHAR2,
+    p_tipo VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_ENDERECO_USUARIO
+    (
+    pais,
+    estado, 
+    cidade,
+    bairro,
+    logradouro_rua,
+    nr_rua,
+    completo,
+    cep,
+    tipo
+    )
+    VALUES (
+        p_pais,
+        p_estado,
+        p_cidade,
+        p_bairro,
+        p_logradouro_rua,
+        p_nr_rua,
+        p_completo,
+        p_cep,
+        p_tipo
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erro no Endereco usuario',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_endereco_usuario;
+
+//Animal
+
+CREATE OR REPLACE PROCEDURE dados_animal(
+    p_rg_animal VARCHAR2,
+    p_nr_microchip_animal VARCHAR2,
+    p_nm_animal VARCHAR2,
+    p_dt_nascimento_animal VARCHAR2,
+    p_peso_animal VARCHAR2,
+    p_especie_animal VARCHAR2,
+    p_raca_animal VARCHAR2,
+    p_id_tutor VARCHAR2,
+    p_id_endereco_usuario VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_ANIMAL
+    (
+    rg_animal,
+    nr_microchip_animal, 
+    nm_animal,
+    dt_nascimento_animal,
+    peso_animal,
+    especie_animal,
+    raca_animal,
+    id_tutor,
+    id_endereco_usuario
+    )
+    VALUES (
+        p_rg_animal,
+        p_nr_microchip_animal,
+        p_nm_animal,
+        p_dt_nascimento_animal,
+        p_peso_animal,
+        p_especie_animal,
+        p_raca_animal,
+        p_id_tutor,
+        p_id_endereco_usuario
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erro nos dados de Animais',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_animal;
+
+//Carteira Vacinal
+CREATE OR REPLACE PROCEDURE dados_carteiravacinal(
+    p_nm_vacina VARCHAR2,
+    p_dt_vacinacao_prevista VARCHAR2,
+    p_dt_vacinacao_efetuada VARCHAR2,
+    p_dt_nascimento_animal VARCHAR2,
+    p_st_vacinacao VARCHAR2,
+    p_id_animal VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_CARTEIRAVACINAL
+    (
+    nm_vacina,
+    dt_vacinacao_prevista,
+    dt_vacinacao_efetuada,
+    st_vacinacao,
+    id_animal
+    )
+    VALUES (
+        p_nm_vacina,
+        p_dt_vacinacao_prevista,
+        p_dt_vacinacao_efetuada,
+        p_dt_nascimento_animal,
+        p_st_vacinacao,
+        p_id_animal
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erro na carteira Vacinação',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_carteiravacinal;
+
+//Prescricao
+CREATE OR REPLACE PROCEDURE dados_prescricao(
+    p_medicamento_prescricao VARCHAR2,
+    p_nm_tutor_prescricao VARCHAR2,
+    p_nm_animal_prescricao VARCHAR2,
+    p_dt_emissao VARCHAR2,
+    p_dt_expiracao VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_PRESCRICAO
+    (
+    medicamento_prescricao,
+    nm_tutor_prescricao,
+    nm_animal_prescricao,
+    dt_emissao,
+    dt_expiracao 
+    )
+    VALUES (
+        p_medicamento_prescricao,
+        p_nm_tutor_prescricao,
+        p_nm_animal_prescricao,
+        p_dt_emissao,
+        p_dt_expiracao 
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erro na carteira Vacinação',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_prescricao;
+
+//Medicamento
+
+CREATE OR REPLACE PROCEDURE dados_carteiravacinal(
+    p_nm_vacina VARCHAR2,
+    p_dt_vacinacao_prevista VARCHAR2,
+    p_dt_vacinacao_efetuada VARCHAR2,
+    p_dt_nascimento_animal VARCHAR2,
+    p_st_vacinacao VARCHAR2,
+    p_id_animal VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_CARTEIRAVACINAL
+    (
+    nm_vacina,
+    dt_vacinacao_prevista,
+    dt_vacinacao_efetuada,
+    st_vacinacao,
+    id_animal
+    )
+    VALUES (
+        p_nm_vacina,
+        p_dt_vacinacao_prevista,
+        p_dt_vacinacao_efetuada,
+        p_dt_nascimento_animal,
+        p_st_vacinacao,
+        p_id_animal
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erro na carteira Vacinação',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_carteiravacinal;
+
+//Prescricao
+CREATE OR REPLACE PROCEDURE dados_prescricao(
+    p_medicamento_prescricao VARCHAR2,
+    p_nm_tutor_prescricao VARCHAR2,
+    p_nm_animal_prescricao VARCHAR2,
+    p_dt_emissao VARCHAR2,
+    p_dt_expiracao VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_PRESCRICAO
+    (
+    medicamento_prescricao,
+    nm_tutor_prescricao,
+    nm_animal_prescricao,
+    dt_emissao,
+    dt_expiracao 
+    )
+    VALUES (
+        p_medicamento_prescricao,
+        p_nm_tutor_prescricao,
+        p_nm_animal_prescricao,
+        p_dt_emissao,
+        p_dt_expiracao 
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erro na carteira Vacinação',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_prescricao;
+
+//Medicamento
+CREATE OR REPLACE PROCEDURE dados_medicamento(
+    p_id_prescricao VARCHAR2,
+    p_nm_medicamento VARCHAR2,
+    p_dosagem_medicamento VARCHAR2,
+    p_frequencia VARCHAR2,
+    p_qtd_dias VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_PRESCRICAO
+    (
+    id_prescricao,
+    nm_medicamento,
+    dosagem_medicamento,
+    frequencia,
+    qtd_dias 
+    )
+    VALUES (
+        p_id_prescricao,
+        p_nm_medicamento,
+        p_dosagem_medicamento,
+        p_frequencia,
+        p_qtd_dias
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erro na medicamento',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_medicamento;
+
+//Vet clinica
+
+CREATE OR REPLACE PROCEDURE dados_vet_clinica(
+    p_id_vet VARCHAR2,
+    p_id_clinica VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_VET_CLINICA
+    (
+    id_vet,
+    id_clinica
+    )
+    VALUES (
+        p_id_vet,
+        p_id_clinica
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erro na vet clinica',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_vet_clinica;
+
+//Consulta
+CREATE OR REPLACE PROCEDURE dados_consulta(
+    p_historico_consulta VARCHAR2,
+    p_st_consulta VARCHAR2,
+    p_dt_consulta VARCHAR2,
+    p_id_clinica_vet VARCHAR2,
+    p_id_animal VARCHAR2,
+    p_id_prescricao VARCHAR2
+)
+IS
+BEGIN 
+    INSERT INTO T_CLYVO_VET_CLINICA
+    (
+        historico_cosnsulta,
+        st_consulta,
+        dt_consulta,
+        id_clinica_vet,
+        id_animal,
+        id_prescricao
+    )
+    VALUES (
+       p_historico_consulta,
+        p_st_consulta,
+        p_dt_consulta,
+        p_id_clinica_vet,
+        p_id_animal,
+        p_id_prescricao
+    );
+    EXCEPTION
+        WHEN VALUE_ERROR THEN
+            INSERT INTO lOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Erro em dados consulta',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro nos valores'
+            );
+END dados_consulta;
+
+
+
+
+
+
+
+    
+
 
 //entrada do usuario ao sistema 
 
