@@ -144,7 +144,7 @@ BEGIN
         END IF;
     END LOOP;
     IF v_valido THEN
-        dbms_output.put_line( 'Login execultado' );
+        dbms_output.put_line( 'Login executado' );
     ELSE
         dbms_output.put_line( 'Email ou senha incorrentos' );
     END IF;
