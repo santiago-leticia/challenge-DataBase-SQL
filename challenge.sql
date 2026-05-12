@@ -774,7 +774,7 @@ BEGIN
                 SQLCODE,
                 'Erro de valor'
             );
-        WHEN OTHER THEN
+        WHEN OTHERS THEN
             INSERT INTO LOGS(
                 nm_procedure,
                 nm_usuario,
