@@ -139,20 +139,18 @@ CREATE OR REPLACE PROCEDURE dados_vet(
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_VET
-    (id_vet,
+    INSERT INTO T_CLYVO_VET(
     nm_vet,
     cpf_vet, 
     crmv_vet, 
     email,
-    senha)
-    VALUES (
-        p_nm_vet,
+    senha
+    )
+    VALUES (p_nm_vet,
         p_cpf_vet,
         p_crmv_vet,
         p_email,
-        p_senha
-    );
+        p_senha);
     
     EXCEPTION
         WHEN VALUE_ERROR THEN
@@ -163,15 +161,46 @@ BEGIN
                 codigo_erro,
                 mensagem_erro
             )
-            values(
-                'inserir_tutor',
+            values(NULL,
+                'Dados_vet',
                 USER,
                 SYSDATE,
                 SQLCODE,
                 'Erro no valor'
             );
+        WHEN VALUE_ERROR THEN
+            INSERT INTO LOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'Errono_vet',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Erro no valor'
+            );
+        WHEN OTHERS THEN
+            INSERT INTO LOGS(
+             nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            ) VALUES (
+                'dados_vet',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                SQLERRM
+            );
+            
     END dados_vet;
-    
+    /
+   
 // endereco clinica
 CREATE OR REPLACE PROCEDURE dados_endereco_clinica(
     p_pais VARCHAR2,
@@ -211,7 +240,7 @@ BEGIN
     );
     EXCEPTION
         WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
+            INSERT INTO LOGS(
                 nm_procedure,
                 nm_usuario,
                 dt_usuario,
@@ -219,39 +248,51 @@ BEGIN
                 mensagem_erro
             )
             values(
-                'Endereco da clinica',
+                'Endereco_clinica',
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'valor erro'
+            );
+        WHEN OTHERS THEN
+            INSERT INTO LOGS(
+             nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            ) VALUES (
+                'dados_en_clinica',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                SQLERRM
             );
 END dados_endereco_clinica;
-
+/
 
 //clinica
 
 CREATE OR REPLACE PROCEDURE dados_clinica(
     p_cnpj_clinica VARCHAR2,
     p_nm_clinica VARCHAR2,
-    p_id_endereco_clinica VARCHAR2
+    p_id_endereco_clinica NUMBER
 )
 IS
 BEGIN 
     INSERT INTO T_CLYVO_CLINICA
-    (
-    cnpj_clinica,
+    (cnpj_clinica,
     nm_clinica, 
-    id_endereco_clinica
-    )
-    VALUES (
-        p_id_clinica,
+    id_endereco_clinica)
+    VALUES 
+    (
         p_cnpj_clinica,
         p_nm_clinica,
         p_id_endereco_clinica
-    );
+        );
     EXCEPTION
         WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
+            INSERT INTO LOGS(
                 nm_procedure,
                 nm_usuario,
                 dt_usuario,
@@ -259,17 +300,31 @@ BEGIN
                 mensagem_erro
             )
             values(
-                'Erros em inserir os dados da clinica',
+                'dados_clinica',
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'valor da clinica'
             );
+        WHEN OTHERS THEN
+            INSERT INTO LOGS (
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )VALUES (
+            'dados_clinica',
+            USER,
+            SYSDATE,
+            SQLCODE,
+            SQLERRM
+        );
 END dados_clinica;
+/
 
 //Tutor Animal
 CREATE OR REPLACE PROCEDURE dados_tutor(
-    p_id_tutor VARCHAR2,
     p_cpf_tutor VARCHAR2,
     p_nm_tutor VARCHAR2,
     p_nr_telefone_tutor VARCHAR2
@@ -277,20 +332,13 @@ CREATE OR REPLACE PROCEDURE dados_tutor(
 IS
 BEGIN 
     INSERT INTO T_CLYVO_TUTOR
-    (id_tutor,
-    cpf_tutor,
-    nm_tutor, 
-    nr_telefone_tutor
+    (cpf_tutor, nm_tutor, nr_telefone_tutor
     )
-    VALUES (
-        p_id_tutor,
-        p_cpf_tutor,
-        p_nm_tutor,
-        p_nr_telefone_tutor
+    VALUES (p_cpf_tutor, p_nm_tutor, p_nr_telefone_tutor
     );
     EXCEPTION
         WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
+            INSERT INTO LOGS(
                 nm_procedure,
                 nm_usuario,
                 dt_usuario,
@@ -298,14 +346,28 @@ BEGIN
                 mensagem_erro
             )
             values(
-                'Erro no Tutor',
+                'dados_tutor',
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'erro no valor'
+            );
+        WHEN OTHERS THEN
+            INSERT INTO LOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            ) VALUES (
+                'dados_tutor',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                SQLERRM
             );
 END dados_tutor;
-
+/
 //Endereco Usuario
 
 CREATE OR REPLACE PROCEDURE dados_endereco_usuario(
@@ -354,13 +416,29 @@ BEGIN
                 mensagem_erro
             )
             values(
-                'Erro no Endereco usuario',
+                'dados_endereco_usuario',
                 USER,
                 SYSDATE,
                 SQLCODE,
                 'Erro nos valores'
             );
+         WHEN OTHERS THEN
+            INSERT INTO LOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            ) VALUES (
+                'dados_tutor',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                SQLERRM
+            );
+        
 END dados_endereco_usuario;
+/
 
 //Animal
 
@@ -368,27 +446,20 @@ CREATE OR REPLACE PROCEDURE dados_animal(
     p_rg_animal VARCHAR2,
     p_nr_microchip_animal VARCHAR2,
     p_nm_animal VARCHAR2,
-    p_dt_nascimento_animal VARCHAR2,
-    p_peso_animal VARCHAR2,
+    p_dt_nascimento_animal DATE,
+    p_peso_animal NUMBER,
     p_especie_animal VARCHAR2,
     p_raca_animal VARCHAR2,
-    p_id_tutor VARCHAR2,
-    p_id_endereco_usuario VARCHAR2
+    p_id_tutor NUMBER,
+    p_id_endereco_usuario NUMBER
 )
 IS
 BEGIN 
     INSERT INTO T_CLYVO_ANIMAL
-    (
-    rg_animal,
-    nr_microchip_animal, 
-    nm_animal,
-    dt_nascimento_animal,
-    peso_animal,
-    especie_animal,
-    raca_animal,
-    id_tutor,
-    id_endereco_usuario
-    )
+    (rg_animal, nr_microchip_animal, 
+    nm_animal, dt_nascimento_animal, peso_animal,
+    especie_animal, raca_animal, id_tutor,
+    id_endereco_usuario)
     VALUES (
         p_rg_animal,
         p_nr_microchip_animal,
@@ -402,30 +473,44 @@ BEGIN
     );
     EXCEPTION
         WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
+            INSERT INTO LOGS(
                 nm_procedure,
                 nm_usuario,
                 dt_usuario,
                 codigo_erro,
                 mensagem_erro
             )
-            values(
-                'Erro nos dados de Animais',
+            values(NULL,
+                'Dados_Animais',
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'valor animal'
+            );
+        WHEN OTHERS THEN
+            INSERT INTO LOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            ) VALUES (
+                'dados_animal',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                SQLERRM
             );
 END dados_animal;
+/
 
 //Carteira Vacinal
 CREATE OR REPLACE PROCEDURE dados_carteiravacinal(
     p_nm_vacina VARCHAR2,
-    p_dt_vacinacao_prevista VARCHAR2,
-    p_dt_vacinacao_efetuada VARCHAR2,
-    p_dt_nascimento_animal VARCHAR2,
+    p_dt_vacinacao_prevista DATE,
+    p_dt_vacinacao_efetuada DATE,
     p_st_vacinacao VARCHAR2,
-    p_id_animal VARCHAR2
+    p_id_animal NUMBER
 )
 IS
 BEGIN 
@@ -441,13 +526,12 @@ BEGIN
         p_nm_vacina,
         p_dt_vacinacao_prevista,
         p_dt_vacinacao_efetuada,
-        p_dt_nascimento_animal,
         p_st_vacinacao,
         p_id_animal
     );
     EXCEPTION
         WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
+            INSERT INTO LOGS(
                 nm_procedure,
                 nm_usuario,
                 dt_usuario,
@@ -455,21 +539,37 @@ BEGIN
                 mensagem_erro
             )
             values(
-                'Erro na carteira Vacinação',
+                'dados_cateiravacinal',
                 USER,
                 SYSDATE,
                 SQLCODE,
                 'Erro nos valores'
             );
+        when others then 
+            INSERT INTO LOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+                
+            ) VALUES (
+            'DADOS_CARTEIRAVACINAL', 
+            USER, 
+            SYSDATE, 
+            SQLCODE,
+            SQLERRM);
+            
 END dados_carteiravacinal;
+/
 
 //Prescricao
 CREATE OR REPLACE PROCEDURE dados_prescricao(
     p_medicamento_prescricao VARCHAR2,
     p_nm_tutor_prescricao VARCHAR2,
     p_nm_animal_prescricao VARCHAR2,
-    p_dt_emissao VARCHAR2,
-    p_dt_expiracao VARCHAR2
+    p_dt_emissao DATE,
+    p_dt_expiracao DATE
 )
 IS
 BEGIN 
@@ -490,7 +590,7 @@ BEGIN
     );
     EXCEPTION
         WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
+            INSERT INTO LOGS(
                 nm_procedure,
                 nm_usuario,
                 dt_usuario,
@@ -498,114 +598,41 @@ BEGIN
                 mensagem_erro
             )
             values(
-                'Erro na carteira Vacinação',
+                'Erro_prescricao',
                 USER,
                 SYSDATE,
                 SQLCODE,
                 'Erro nos valores'
             );
+        WHEN OTHERS THEN
+            INSERT INTO LOGS (
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values (
+            'dados_prescricao',
+            USER,
+            SYSDATE,
+            SQLCODE,
+            SQLERRM
+        );
 END dados_prescricao;
-
-//Medicamento
-
-CREATE OR REPLACE PROCEDURE dados_carteiravacinal(
-    p_nm_vacina VARCHAR2,
-    p_dt_vacinacao_prevista VARCHAR2,
-    p_dt_vacinacao_efetuada VARCHAR2,
-    p_dt_nascimento_animal VARCHAR2,
-    p_st_vacinacao VARCHAR2,
-    p_id_animal VARCHAR2
-)
-IS
-BEGIN 
-    INSERT INTO T_CLYVO_CARTEIRAVACINAL
-    (
-    nm_vacina,
-    dt_vacinacao_prevista,
-    dt_vacinacao_efetuada,
-    st_vacinacao,
-    id_animal
-    )
-    VALUES (
-        p_nm_vacina,
-        p_dt_vacinacao_prevista,
-        p_dt_vacinacao_efetuada,
-        p_dt_nascimento_animal,
-        p_st_vacinacao,
-        p_id_animal
-    );
-    EXCEPTION
-        WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
-                nm_procedure,
-                nm_usuario,
-                dt_usuario,
-                codigo_erro,
-                mensagem_erro
-            )
-            values(
-                'Erro na carteira Vacinação',
-                USER,
-                SYSDATE,
-                SQLCODE,
-                'Erro nos valores'
-            );
-END dados_carteiravacinal;
-
-//Prescricao
-CREATE OR REPLACE PROCEDURE dados_prescricao(
-    p_medicamento_prescricao VARCHAR2,
-    p_nm_tutor_prescricao VARCHAR2,
-    p_nm_animal_prescricao VARCHAR2,
-    p_dt_emissao VARCHAR2,
-    p_dt_expiracao VARCHAR2
-)
-IS
-BEGIN 
-    INSERT INTO T_CLYVO_PRESCRICAO
-    (
-    medicamento_prescricao,
-    nm_tutor_prescricao,
-    nm_animal_prescricao,
-    dt_emissao,
-    dt_expiracao 
-    )
-    VALUES (
-        p_medicamento_prescricao,
-        p_nm_tutor_prescricao,
-        p_nm_animal_prescricao,
-        p_dt_emissao,
-        p_dt_expiracao 
-    );
-    EXCEPTION
-        WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
-                nm_procedure,
-                nm_usuario,
-                dt_usuario,
-                codigo_erro,
-                mensagem_erro
-            )
-            values(
-                'Erro na carteira Vacinação',
-                USER,
-                SYSDATE,
-                SQLCODE,
-                'Erro nos valores'
-            );
-END dados_prescricao;
+/
 
 //Medicamento
 CREATE OR REPLACE PROCEDURE dados_medicamento(
-    p_id_prescricao VARCHAR2,
+    p_id_prescricao NUMBER,
     p_nm_medicamento VARCHAR2,
     p_dosagem_medicamento VARCHAR2,
     p_frequencia VARCHAR2,
-    p_qtd_dias VARCHAR2
+    p_qtd_dias NUMBER
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_PRESCRICAO
+    INSERT INTO T_CLYVO_MEDICAMENTO
     (
     id_prescricao,
     nm_medicamento,
@@ -622,7 +649,7 @@ BEGIN
     );
     EXCEPTION
         WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
+            INSERT INTO LOGS(
                 nm_procedure,
                 nm_usuario,
                 dt_usuario,
@@ -630,19 +657,34 @@ BEGIN
                 mensagem_erro
             )
             values(
-                'Erro na medicamento',
+                'dados_medicamento',
                 USER,
                 SYSDATE,
                 SQLCODE,
                 'Erro nos valores'
             );
+        WHEN OTHERS THEN
+            INSERT INTO LOGS (
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )
+            values (
+            'dados_medicamento',
+            USER,
+            SYSDATE,
+            SQLCODE,
+            SQLERRM
+        );
 END dados_medicamento;
-
+/
 //Vet clinica
 
 CREATE OR REPLACE PROCEDURE dados_vet_clinica(
-    p_id_vet VARCHAR2,
-    p_id_clinica VARCHAR2
+    p_id_vet NUMBER,
+    p_id_clinica NUMBER
 )
 IS
 BEGIN 
@@ -657,7 +699,7 @@ BEGIN
     );
     EXCEPTION
         WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
+            INSERT INTO LOGS(
                 nm_procedure,
                 nm_usuario,
                 dt_usuario,
@@ -671,20 +713,35 @@ BEGIN
                 SQLCODE,
                 'Erro nos valores'
             );
+        WHEN OTHERS THEN
+            INSERT INTO LOGS (
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            )VALUES (
+                'dados_vet_clinica',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                SQLERRM
+            );
 END dados_vet_clinica;
+/
 
 //Consulta
 CREATE OR REPLACE PROCEDURE dados_consulta(
     p_historico_consulta VARCHAR2,
     p_st_consulta VARCHAR2,
-    p_dt_consulta VARCHAR2,
-    p_id_clinica_vet VARCHAR2,
-    p_id_animal VARCHAR2,
-    p_id_prescricao VARCHAR2
+    p_dt_consulta DATE,
+    p_id_clinica_vet NUMBER,
+    p_id_animal NUMBER,
+    p_id_prescricao NUMBER
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_VET_CLINICA
+    INSERT INTO T_CLYVO_CONSULTA
     (
         historico_cosnsulta,
         st_consulta,
@@ -694,7 +751,7 @@ BEGIN
         id_prescricao
     )
     VALUES (
-       p_historico_consulta,
+        p_historico_consulta,
         p_st_consulta,
         p_dt_consulta,
         p_id_clinica_vet,
@@ -703,7 +760,7 @@ BEGIN
     );
     EXCEPTION
         WHEN VALUE_ERROR THEN
-            INSERT INTO lOGS(
+            INSERT INTO LOGS(
                 nm_procedure,
                 nm_usuario,
                 dt_usuario,
@@ -711,22 +768,28 @@ BEGIN
                 mensagem_erro
             )
             values(
-                'Erro em dados consulta',
+                'dados_consulta',
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'Erro de valor'
+            );
+        WHEN OTHER THEN
+            INSERT INTO LOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_usuario,
+                codigo_erro,
+                mensagem_erro
+            ) VALUES (
+                'dados_consulta',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                SQLERRM
             );
 END dados_consulta;
-
-
-
-
-
-
-
-    
-
+/
 
 //entrada do usuario ao sistema 
 
