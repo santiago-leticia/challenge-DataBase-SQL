@@ -56,7 +56,6 @@ logradouro_rua VARCHAR(20) NOT NULL,
 nr_rua VARCHAR(20) NOT NULL,
 completo VARCHAR(20) NOT NULL,
 cep VARCHAR(9) NOT NULL,
-tipo VARCHAR(20) CHECK (tipo IN ('Casa','Apartamento')) NOT NULL,
 id_tutor number(2) NOT NULL,
 CONSTRAINT fk_en_tutor FOREIGN KEY(id_tutor) REFERENCES T_CLYVO_TUTOR(id_tutor)
 );
@@ -84,7 +83,6 @@ logradouro_rua VARCHAR(20) NOT NULL,
 nr_rua VARCHAR(20) NOT NULL,
 completo VARCHAR(20) NOT NULL,
 cep VARCHAR(9) NOT NULL,
-tipo VARCHAR(20) CHECK (tipo IN ('Casa','Apartamento','Fazenda')) NOT NULL,
 id_animal number(2) NOT NULL,
 CONSTRAINT fk_en_animal FOREIGN KEY(id_animal) REFERENCES T_CLYVO_ANIMAL(id_animal)
 );
@@ -519,7 +517,6 @@ BEGIN
     nr_rua,
     completo,
     cep,
-    tipo,
     id_tutor
     )
     VALUES (
@@ -531,7 +528,6 @@ BEGIN
         p_nr_rua,
         p_completo,
         p_cep,
-        p_tipo,
         p_id_tutor
     );
     EXCEPTION
@@ -667,12 +663,11 @@ CREATE OR REPLACE PROCEDURE dados_endereco_animal(
     p_nr_rua VARCHAR2,
     p_completo VARCHAR2,
     p_cep VARCHAR2,
-    p_tipo VARCHAR2,
     p_id_animal NUMBER
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_ENDERECO_TUTOR
+    INSERT INTO T_CLYVO_ENDERECO_ANIMAL
     (
     pais,
     estado, 
@@ -682,7 +677,6 @@ BEGIN
     nr_rua,
     completo,
     cep,
-    tipo,
     id_animal
     )
     VALUES (
@@ -694,7 +688,6 @@ BEGIN
         p_nr_rua,
         p_completo,
         p_cep,
-        p_tipo,
         p_id_animal
     );
     EXCEPTION
@@ -1156,7 +1149,6 @@ BEGIN
         '123',
         '399',
         '01310200',
-        'Casa',
         1
     );
     COMMIT;
@@ -1172,7 +1164,6 @@ BEGIN
         '456',
         '499',
         '02540450',
-        'Apartamento',
         2
     );
     COMMIT;
@@ -1219,7 +1210,6 @@ BEGIN
         '123',
         '399',
         '01310200',
-        'Casa',
         1
     );
     COMMIT;
@@ -1235,7 +1225,6 @@ BEGIN
         '789',
         '200',
         '01310222',
-        'Fazenda',
         2
     );
     COMMIT;
