@@ -151,18 +151,19 @@ CREATE OR REPLACE PROCEDURE dados_vet(
 IS
 BEGIN 
     INSERT INTO T_CLYVO_VET(
-    nm_vet,
-    cpf_vet, 
-    crmv_vet, 
-    email,
-    senha
+        nm_vet,
+        cpf_vet, 
+        crmv_vet, 
+        email,
+        senha
     )
-    VALUES (p_nm_vet,
+    VALUES (
+        p_nm_vet,
         p_cpf_vet,
         p_crmv_vet,
         p_email,
-        p_senha);
-    
+        p_senha
+    );
     EXCEPTION
         WHEN VALUE_ERROR THEN
             INSERT INTO lOGS(
@@ -177,7 +178,7 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro no valor'
+                'Erro em inserir em vet'
             );
         WHEN DUP_VAL_ON_INDEX THEN
             INSERT INTO LOGS(
@@ -220,13 +221,14 @@ CREATE OR REPLACE PROCEDURE dados_clinica(
 IS
 BEGIN 
     INSERT INTO T_CLYVO_CLINICA
-    (cnpj_clinica,
-    nm_clinica
+    (
+        cnpj_clinica,
+        nm_clinica
     )
     VALUES 
         (
-        p_cnpj_clinica,
-        p_nm_clinica
+            p_cnpj_clinica,
+            p_nm_clinica
         );
     EXCEPTION
         WHEN VALUE_ERROR THEN
@@ -242,7 +244,7 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'valor da clinica'
+                'Erro em inserir dados clinica'
             );
         WHEN OTHERS THEN
             INSERT INTO LOGS (
@@ -251,13 +253,15 @@ BEGIN
                 dt_ocorrencia,
                 codigo_erro,
                 mensagem_erro
-            )VALUES (
-            'dados_clinica',
-            USER,
-            SYSDATE,
-            SQLCODE,
-            SQLERRM
-        );
+            )
+            VALUES 
+            (
+                'dados_clinica',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                SQLERRM
+            );
 END dados_clinica;
 
    
@@ -277,17 +281,18 @@ IS
 BEGIN 
     INSERT INTO T_CLYVO_ENDERECO_CLINICA
     (
-    pais,
-    estado, 
-    cidade, 
-    bairro,
-    logradouro_rua,
-    nr_rua,
-    completo,
-    cep,
-    id_clinica
+        pais,
+        estado, 
+        cidade, 
+        bairro,
+        logradouro_rua,
+        nr_rua,
+        completo,
+        cep,
+        id_clinica
     )
-    VALUES (
+    VALUES 
+    (
         p_pais,
         p_estado,
         p_cidade,
@@ -312,7 +317,7 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'valor erro'
+                'Erro em inserir em endereço clinica'
             );
         WHEN OTHERS THEN
             INSERT INTO LOGS(
@@ -340,8 +345,8 @@ IS
 BEGIN 
     INSERT INTO T_CLYVO_VET_CLINICA
     (
-    id_vet,
-    id_clinica
+        id_vet,
+        id_clinica
     )
     VALUES (
         p_id_vet,
@@ -361,7 +366,7 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'Erro em inserir vet clinica'
             );
         WHEN OTHERS THEN
             INSERT INTO LOGS (
@@ -379,7 +384,7 @@ BEGIN
             );
 END dados_vet_clinica;
 
--- Tutor Animal
+-- Responsavel
 
 CREATE OR REPLACE PROCEDURE dados_responsavel(
     p_cpf_responsavel VARCHAR2,
@@ -388,15 +393,15 @@ CREATE OR REPLACE PROCEDURE dados_responsavel(
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_RESPONSAVEL
-    (cpf_responsavel, 
-    nm_responsavel, 
-    nr_telefone_responsavel
+    INSERT INTO T_CLYVO_RESPONSAVEL (
+        cpf_responsavel, 
+        nm_responsavel, 
+        nr_telefone_responsavel
     )
     VALUES (
-    p_cpf_responsavel,
-    p_nm_responsavel,
-    p_nr_telefone_responsavel
+        p_cpf_responsavel,
+        p_nm_responsavel,
+        p_nr_telefone_responsavel
     );
     EXCEPTION
         WHEN VALUE_ERROR THEN
@@ -412,7 +417,7 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'erro no valor'
+                'Erro em inserir responsavel'
             );
         WHEN DUP_VAL_ON_INDEX THEN
             INSERT INTO LOGS(
@@ -445,7 +450,6 @@ BEGIN
             );
 END dados_responsavel;
 
-
 -- Endereco Usuario
 
 CREATE OR REPLACE PROCEDURE dados_endereco_responsavel(
@@ -462,17 +466,16 @@ CREATE OR REPLACE PROCEDURE dados_endereco_responsavel(
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_ENDERECO_RESPONSAVEL
-    (
-    pais,
-    estado, 
-    cidade,
-    bairro,
-    logradouro_rua,
-    nr_rua,
-    completo,
-    cep,
-    id_responsavel
+    INSERT INTO T_CLYVO_ENDERECO_RESPONSAVEL (
+        pais,
+        estado, 
+        cidade,
+        bairro,
+        logradouro_rua,
+        nr_rua,
+        completo,
+        cep,
+        id_responsavel
     )
     VALUES (
         p_pais,
@@ -499,7 +502,7 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'Erro em inserir em endereço responsavel'
             );
          WHEN OTHERS THEN
             INSERT INTO LOGS(
@@ -518,7 +521,6 @@ BEGIN
         
 END dados_endereco_responsavel;
 
-
 -- Animal
 
 CREATE OR REPLACE PROCEDURE dados_animal(
@@ -533,15 +535,16 @@ CREATE OR REPLACE PROCEDURE dados_animal(
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_ANIMAL
-    (rg_animal,
-    nr_microchip_animal, 
-    nm_animal,
-    dt_nascimento_animal,
-    peso_animal,
-    especie_animal,
-    raca_animal,
-    id_responsavel)
+    INSERT INTO T_CLYVO_ANIMAL(
+        rg_animal,
+        nr_microchip_animal, 
+        nm_animal,
+        dt_nascimento_animal,
+        peso_animal,
+        especie_animal,
+        raca_animal,
+        id_responsavel
+        )
     VALUES (
         p_rg_animal,
         p_nr_microchip_animal,
@@ -599,15 +602,15 @@ IS
 BEGIN 
     INSERT INTO T_CLYVO_ENDERECO_ANIMAL
     (
-    pais,
-    estado, 
-    cidade,
-    bairro,
-    logradouro_rua,
-    nr_rua,
-    completo,
-    cep,
-    id_animal
+        pais,
+        estado, 
+        cidade,
+        bairro,
+        logradouro_rua,
+        nr_rua,
+        completo,
+        cep,
+        id_animal
     )
     VALUES (
         p_pais,
@@ -634,7 +637,7 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'Erro em inserir endereço animal.'
             );
          WHEN OTHERS THEN
             INSERT INTO LOGS(
@@ -650,7 +653,6 @@ BEGIN
                 SQLCODE,
                 SQLERRM
             );
-        
 END dados_endereco_animal;
 
 -- Carteira Vacinal
@@ -664,15 +666,13 @@ CREATE OR REPLACE PROCEDURE dados_carteiravacinal(
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_CARTEIRAVACINAL
-    (
-    nm_vacina,
-    dt_vacinacao_prevista,
-    dt_vacinacao_efetuada,
-    st_vacinacao,
-    id_animal
-    )
-    VALUES (
+    INSERT INTO T_CLYVO_CARTEIRAVACINAL(
+        nm_vacina,
+        dt_vacinacao_prevista,
+        dt_vacinacao_efetuada,
+        st_vacinacao,
+        id_animal
+    )VALUES (
         p_nm_vacina,
         p_dt_vacinacao_prevista,
         p_dt_vacinacao_efetuada,
@@ -693,7 +693,7 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'Erro em inserir em carteira vacinal'
             );
         when others then 
             INSERT INTO LOGS(
@@ -708,8 +708,7 @@ BEGIN
             USER, 
             SYSDATE, 
             SQLCODE,
-            SQLERRM);
-            
+            SQLERRM); 
 END dados_carteiravacinal;
 
 -- Consulta
@@ -722,8 +721,7 @@ CREATE OR REPLACE PROCEDURE dados_consulta(
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_CONSULTA
-    (
+    INSERT INTO T_CLYVO_CONSULTA(
         historico_cosnsulta,
         st_consulta,
         dt_consulta,
@@ -751,7 +749,7 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro de valor'
+                'Erro em inserir em consulta'
             );
         WHEN OTHERS THEN
             INSERT INTO LOGS(
@@ -779,8 +777,7 @@ CREATE OR REPLACE PROCEDURE dados_prescricao(
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_PRESCRICAO
-    (
+    INSERT INTO T_CLYVO_PRESCRICAO(
         dt_emissao,
         dt_expiracao,
         id_consulta,
@@ -806,7 +803,7 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'Erro em inserir em prescrição'
             );
         WHEN OTHERS THEN
             INSERT INTO LOGS (
@@ -836,13 +833,15 @@ CREATE OR REPLACE PROCEDURE dados_medicamento(
 )
 IS
 BEGIN 
-    INSERT INTO T_CLYVO_MEDICAMENTO
-    (
-    id_prescricao,
-    nm_medicamento,
-    dosagem_medicamento,
-    frequencia,
-    qtd_dias 
+    SELECT id_prescricao INTO p_id_prescricao FROM T_CLYVO_PRESCRICAO
+        WHERE id_prescricao = p_id_prescricao;
+
+    INSERT INTO T_CLYVO_MEDICAMENTO(
+        id_prescricao,
+        nm_medicamento,
+        dosagem_medicamento,
+        frequencia,
+        qtd_dias 
     )
     VALUES (
         p_id_prescricao,
@@ -865,7 +864,22 @@ BEGIN
                 USER,
                 SYSDATE,
                 SQLCODE,
-                'Erro nos valores'
+                'Erro em inserir em medicamento'
+            );
+        WHEN NO_DATA_FOUND THEN
+            INSERT INTO LOGS(
+                nm_procedure,
+                nm_usuario,
+                dt_ocorrencia,
+                codigo_erro,
+                mensagem_erro
+            )
+            values(
+                'dados_medicamento',
+                USER,
+                SYSDATE,
+                SQLCODE,
+                'Id de prescrição não achado'
             );
         WHEN OTHERS THEN
             INSERT INTO LOGS (
@@ -1009,7 +1023,7 @@ BEGIN
 END;
 
 BEGIN
-    dados_endereco_tutor(
+    dados_endereco_responsavel(
         'Brasil',
         'São Paulo',
         'Guarulhos',
@@ -1200,7 +1214,7 @@ END;
 
 -- buscar informação do pet
 
--- buscar informacao do tutor
+-- buscar informacao do dados_endereco_responsavel
 
 
 
