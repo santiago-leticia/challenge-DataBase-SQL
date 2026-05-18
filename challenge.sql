@@ -1465,6 +1465,20 @@ BEGIN
     );
     COMMIT;
 END;
+BEGIN
+    dados_animal(
+        NULL,
+        NULL,
+        'Fofucho',
+        TO_DATE('2020-08-10', 'YYYY-MM-DD'),
+        30,
+        'Felino',
+        'Laranja',
+        1
+    );
+    COMMIT;
+END;
+
 
 BEGIN
     dados_animal(
@@ -1490,6 +1504,20 @@ BEGIN
         'felino',
         'vira-lata',
         3
+    );
+    COMMIT;
+END;
+
+BEGIN
+    dados_animal(
+        '12442546',
+        '13250',
+        'Hercules',
+        TO_DATE('2022-03-20', 'YYYY-MM-DD'),
+        25,
+        'felino',
+        'vira-lata',
+        1
     );
     COMMIT;
 END;
@@ -1591,10 +1619,22 @@ END;
 BEGIN  
     dados_consulta(
         'O paciente está com sobpeso',
+        'passada',
+        TO_DATE('2026-05-13', 'YYYY-MM-DD'),
+        5,
+        1
+    );
+    COMMIT;
+END;
+
+
+BEGIN  
+    dados_consulta(
+        'O paciente está com sobpeso',
         'execução',
         TO_DATE('2026-10-13', 'YYYY-MM-DD'),
-        5,
-        2
+        2,
+        5
     );
     COMMIT;
 END;
@@ -1610,6 +1650,28 @@ BEGIN
     COMMIT;
 END;
 
+
+BEGIN
+    dados_consulta(
+        'O paciente esta com frequencia alta de vomitos',
+        'passada',
+        TO_DATE('2026-05-04','YYYY-MM-DD'),
+        7,
+        3
+    );
+    COMMIT;
+END;
+
+BEGIN
+    dados_consulta(
+        'O paciente esta com pata mal',
+        'passada',
+        TO_DATE('2026-05-04','YYYY-MM-DD'),
+        6,
+        3
+    );
+    COMMIT;
+END;
 -- prescricao
 
 BEGIN 
@@ -1666,16 +1728,333 @@ BEGIN
     COMMIT;
 END;
 
--- entrada do usuario ao sistema 
--- cadastrar a consulta - opcao se tem o animal no banco de dados e se nao tem e ai tem que criar
+
+--  Criar dois blocos anônimos para mostrar os dados inseridos, com pelo menos 3 consultas de junções (Joins) utilizando 
+--agrupamento (group by) e ordenação (order by). 
+
+--Ver as consulta que cada veteriano possui
+DECLARE 
+    buscar VARCHAR(20) := '&nome';
+    CURSOR c_vet 
+        IS SELECT 
+            c.historico_consulta,
+            c.st_consulta,
+            c.dt_consulta,
+            a.nm_animal,
+            a.especie_animal,
+            COUNT(c.id_consulta) AS consulta 
+        FROM 
+            T_CLYVO_CONSULTA c
+        INNER JOIN
+            T_CLYVO_ANIMAL a ON c.id_animal = a.id_animal
+        INNER JOIN 
+            T_CLYVO_VET v ON v.id_vet = c.id_vet
+        WHERE
+            v.nm_vet = buscar
+        GROUP BY 
+            v.nm_vet,
+            c.historico_consulta,
+            c.st_consulta,
+            c.dt_consulta,
+            a.nm_animal,
+            a.especie_animal
+        ORDER BY 
+            a.nm_animal;
+BEGIN
+    dbms_output.put_line('Historico de consulta de '||buscar);
+    FOR v_exibe in c_vet LOOP
+        dbms_output.put_line('----------------------------------------------------------------------------');
+        dbms_output.put_line('Paciente: '||v_exibe.nm_animal);
+        dbms_output.put_line('Especie: '||v_exibe.especie_animal);
+        dbms_output.put_line('Data da consulta: '||v_exibe.dt_consulta);
+        dbms_output.put_line('Status: '||v_exibe.st_consulta);
+        dbms_output.put_line('Informação da consulta: '||v_exibe.historico_consulta);
+    END LOOP;
+END;
 
 
+--Parte de ver a listagem de pet e informacao sobre tutor
+--carteira de vacinação.
 
--- buscar informação do pet
+DECLARE 
+    buscar VARCHAR(20) := '&buscaDados';
+    CURSOR c_animal
+        IS SELECT 
+            a.rg_animal,
+            a.nr_microchip_animal, 
+            a.nm_animal,
+            a.dt_nascimento_animal,
+            a.peso_animal,
+            a.especie_animal,
+            a.raca_animal,
+            r.nm_responsavel,
+            c.nm_vacina,
+            c.dt_vacinacao_prevista,
+            c.dt_vacinacao_efetuada,
+            c.st_vacinacao,
+            e_a.pais,
+            e_a.estado,
+            e_a.cidade,
+            e_a.bairro,
+            COUNT(a.id_animal) AS valor_vacina 
+        FROM 
+            T_CLYVO_ANIMAL a
+        INNER JOIN
+            T_CLYVO_CARTEIRAVACINAL c ON a.id_animal = c.id_animal
+        INNER JOIN 
+            T_CLYVO_RESPONSAVEL r ON a.id_responsavel = r.id_responsavel
+        INNER JOIN
+            T_CLYVO_ENDERECO_ANIMAL e_a ON e_a.id_animal = a.id_animal
+        WHERE
+            a.nm_animal = buscar
+        GROUP BY 
+            a.rg_animal,
+            a.nr_microchip_animal, 
+            a.nm_animal,
+            a.dt_nascimento_animal,
+            a.peso_animal,
+            a.especie_animal,
+            a.raca_animal,
+            r.nm_responsavel,
+            c.nm_vacina,
+            c.dt_vacinacao_prevista,
+            c.dt_vacinacao_efetuada,
+            c.st_vacinacao,
+            e_a.pais,
+            e_a.estado,
+            e_a.cidade,
+            e_a.bairro
+        ORDER BY 
+            a.nm_animal;
+BEGIN
+    dbms_output.put_line('Informação de '||buscar);
+    FOR v_exibe IN c_animal LOOP
+        dbms_output.put_line('----------------------------------------------------------------------------');
+        dbms_output.put_line('Informação do '||v_exibe.nm_animal);
+        dbms_output.put_line('      Nome Paciente: '||v_exibe.nm_animal);
+        dbms_output.put_line('      Responsavel: '||v_exibe.nm_responsavel);
+        dbms_output.put_line('      Data de nascimento: '||v_exibe.dt_nascimento_animal);
+        dbms_output.put_line('      Especie: '||v_exibe.especie_animal);
+        dbms_output.put_line('      Raça: '||v_exibe.raca_animal);
+        dbms_output.put_line('Dados do pet: ');
+        dbms_output.put_line('      RG PET: '||v_exibe.rg_animal);
+        dbms_output.put_line('      Microchip: '||v_exibe.nr_microchip_animal);
+        dbms_output.put_line('Carteira Vacinal: ');
+        dbms_output.put_line('      Nome da vacina: '||v_exibe.nm_vacina);
+        dbms_output.put_line('      Data prevista: '||v_exibe.dt_vacinacao_prevista);
+        dbms_output.put_line('      Data efetuada: '||v_exibe.dt_vacinacao_efetuada);
+        dbms_output.put_line('      Status da vacina: '||v_exibe.st_vacinacao);
+        dbms_output.put_line('Endereço do pet: ');
+        dbms_output.put_line('      Pais: '||v_exibe.pais);
+        dbms_output.put_line('      Estado: '||v_exibe.estado);
+        dbms_output.put_line('      Cidade: '||v_exibe.cidade);
+        dbms_output.put_line('      Bairro: '||v_exibe.bairro);
+    END LOOP;
+    dbms_output.put_line('----------------------------------------------------------------------------');
+END;
 
--- buscar informacao do dados_endereco_responsavel
+
+--Criar um bloco que deverá ler os dados de uma tabela e, na mesma linha, mostrar o valor de uma coluna da linha atual, o valor 
+--dessa mesma coluna na linha anterior e o valor dessa mesma coluna na próxima linha. Caso a linha anterior ou a próxima linha não 
+--existir, apresentar a palavra "Vazio". O relatório deve ter, pelo menos, cinco linhas de dados. A tabela e a coluna a ser exibida fica a 
+--cargo do grupo. (20 pts
+
+DECLARE 
+    CURSOR c_veterinario IS
+        SELECT v.id_vet, 
+                v.nm_vet,
+                CASE
+                    WHEN 
+                        SUM(CASE WHEN c.st_consulta='passada' THEN 1 ELSE 0 END)=0 THEN 'Vazio'
+                    ELSE 
+                        TO_CHAR(SUM(CASE WHEN c.st_consulta='passada' THEN 1 ELSE 0 END)) 
+                    END AS v_consulta_realiazada,
+                CASE
+                    WHEN 
+                        SUM(CASE WHEN c.st_consulta!='passada' THEN 1 ELSE 0 END)=0 THEN 'Vazio'
+                    ELSE
+                        TO_CHAR(SUM(CASE WHEN c.st_consulta='futura' THEN 1 ELSE 0 END)) 
+                    END AS v_consulta_presentes, 
+                    
+                CASE 
+                    WHEN
+                        MAX(CASE WHEN c.st_consulta ='passada' THEN a.nm_animal END) IS NULL THEN 'Vazio'
+                    ELSE
+                        MAX(CASE WHEN c.st_consulta ='passada' THEN a.nm_animal END)
+                    END AS ultima_passada, 
+                    
+                CASE
+                    WHEN
+                        MAX(CASE WHEN c.st_consulta ='execução' THEN a.nm_animal END) IS NULL THEN 'Vazio'
+                    ELSE
+                        MAX(CASE WHEN c.st_consulta ='execução' THEN a.nm_animal END)
+                    END AS con_exercucao,
+                    
+                CASE
+                    WHEN
+                        MAX(CASE WHEN c.st_consulta='futura' THEN a.nm_animal END) IS NULL THEN 'Vazio'
+                    ELSE
+                        MAX(CASE WHEN c.st_consulta='futura' THEN a.nm_animal END)
+                    END AS con_futura,
+                    
+                MAX(c.dt_consulta) as dt_consulta
+        FROM 
+            T_CLYVO_VET v
+        INNER JOIN 
+            T_CLYVO_CONSULTA c ON v.id_vet = c.id_vet
+        INNER JOIN
+            T_CLYVO_ANIMAL a ON c.id_animal =  a.id_animal
+        GROUP BY v.id_vet, v.nm_vet
+        ORDER BY v.id_vet;
+BEGIN
+
+    dbms_output.put_line(
+        RPAD('ID_VET',8) ||
+        RPAD('NM_VET',15) ||
+        RPAD('CON_REALIAZADA',17) ||
+        RPAD('CON_PENDENTE',16) ||
+        RPAD('CON_ANTERIOR',18) ||
+        RPAD('CON_ATUAL',18) ||
+        RPAD('CON_PROXIM',18) ||
+        RPAD('PROXIMO DIA DA CONSULTA',12)
+    );
+    FOR v_vet IN c_veterinario LOOP
+        dbms_output.put_line(
+            RPAD(v_vet.id_vet,8) ||
+            RPAD(v_vet.nm_vet,15) ||
+            RPAD(v_vet.v_consulta_realiazada,17) ||
+            RPAD(v_vet.v_consulta_presentes,16) ||
+            RPAD(v_vet.ultima_passada,18) ||
+            RPAD(v_vet.con_exercucao,18) ||
+            RPAD(v_vet.con_futura,18) ||
+            RPAD(TO_CHAR(v_vet.dt_consulta, 'DD/MM/YYYY'),12)
+        );
+    END LOOP;
+END;
+
+--quanta consultas que cada clinica fez
+
+DECLARE
+v_consultaRealiazada NUMBER := 0;
+totalGeral NUMBER := 0;
+
+CURSOR c_clinica IS
+    SELECT 
+        c.nm_clinica,
+        COUNT(DISTINCT vc.id_vet) AS total_vet,
+        ec.estado,
+        SUM(CASE
+            WHEN 
+                con.st_consulta ='passada' THEN 1 ELSE 0
+            END) AS v_realizada
+    FROM T_CLYVO_CLINICA c
+    INNER JOIN  T_CLYVO_VET_CLINICA vc ON c.id_clinica = vc.id_clinica
+    INNER JOIN T_CLYVO_CONSULTA con ON vc.id_vet = con.id_vet
+    INNER JOIN T_CLYVO_ENDERECO_CLINICA ec ON  c.id_clinica = ec.id_clinica
+    GROUP BY c.nm_clinica, ec.estado
+    ORDER BY ec.estado, c.nm_clinica;
+
+    TYPE t_clinica IS TABLE OF c_clinica%ROWTYPE;
+    v_clinica t_clinica;
+    
+BEGIN
+    OPEN c_clinica ;
+    FETCH c_clinica BULK COLLECT INTO v_clinica;
+    CLOSE c_clinica;
+    
+    dbms_output.put_line(
+        RPAD('NM CLINICA ',12) ||
+        RPAD('Quantidade de VET ',15) ||
+        RPAD(' CONSULTA REALIAZADA',17)
+    );
+    --para diferencia os estados
+    FOR i IN 1..v_clinica.COUNT LOOP
+    
+        totalGeral := totalGeral + v_clinica(i).v_realizada;
+        
+        IF i > 1 AND v_clinica(i).estado != v_clinica(i-1).estado THEN
+            dbms_output.put_line('Sub-Total de '||v_clinica(i-1).estado||': '||v_consultaRealiazada);
+            v_consultaRealiazada := v_clinica(i).v_realizada;
+        ELSE
+            v_consultaRealiazada := v_consultaRealiazada + v_clinica(i).v_realizada;
+        END IF;
+            dbms_output.put_line(
+                RPAD(v_clinica(i).nm_clinica,8) ||
+                RPAD(v_clinica(i).total_vet,15) ||
+                RPAD(v_clinica(i).v_realizada,17)
+            );
+    END LOOP;
+    dbms_output.put_line('Sub-Total de '||v_clinica(v_clinica.COUNT).estado||': '||v_consultaRealiazada);
+
+    dbms_output.put_line('Total Geral '||totalGeral);
+END;
+
+--Quantidade da clinica sobre quantos veterianos fizeram de consultas
 
 
+DECLARE
+v_consultaRealiazada NUMBER := 0;
+totalGeral NUMBER := 0;
+pacienteFrequente VARCHAR(20) :='';
+n NUMBER :=0;
+
+CURSOR c_consulta IS
+    SELECT 
+        a.nm_animal,
+        MAX(c.nm_clinica) AS nm_clinica,
+        MAX(v.nm_vet) AS nm_vet,
+        SUM(CASE
+            WHEN 
+                con.st_consulta ='passada' THEN 1 ELSE 0
+            END) AS v_realizada
+    FROM T_CLYVO_CONSULTA con
+    INNER JOIN T_CLYVO_ANIMAL a ON con.id_animal = a.id_animal
+    INNER JOIN T_CLYVO_VET v ON con.id_vet = v.id_vet
+    INNER JOIN  T_CLYVO_VET_CLINICA vc ON v.id_vet = vc.id_vet
+    INNER JOIN T_CLYVO_CLINICA c ON vc.id_clinica = c.id_clinica
+    GROUP BY a.nm_animal
+    ORDER BY a.nm_animal;
+
+    TYPE t_consulta IS TABLE OF c_consulta%ROWTYPE;
+    v_consulta t_consulta;
+    
+BEGIN
+    OPEN c_consulta ;
+    FETCH c_consulta BULK COLLECT INTO v_consulta;
+    CLOSE c_consulta;
+    
+    dbms_output.put_line(
+        RPAD('Nome do paciente ',20) ||
+        RPAD('Veteriano ',18) ||
+        RPAD('Clinica responsavel ',20) ||
+        RPAD('Clinica Realiazada',20)
+    );
+    
+    FOR i IN 1..v_consulta.COUNT LOOP
+    
+        totalGeral := totalGeral + v_consulta(i).v_realizada;
+        v_consultaRealiazada := v_consultaRealiazada + v_consulta(i).v_realizada;
+
+        dbms_output.put_line(
+                RPAD(v_consulta(i).nm_animal,20) ||
+                RPAD(v_consulta(i).nm_vet,18) ||
+                RPAD(v_consulta(i).nm_clinica,20) ||
+                RPAD(v_consulta(i).v_realizada,20)
+            );
+        
+        IF v_consulta(i).v_realizada > n THEN
+            pacienteFrequente := v_consulta(i).nm_animal;
+            n := v_consulta(i).v_realizada;
+        END IF;
+        
+    END LOOP;
+    
+    -- ver quem foi o paciente mais ativo 
+    dbms_output.put_line('Paciente mais frequente é: '||pacienteFrequente);
+    dbms_output.put_line('Total Geral '||totalGeral);
+END;
+
+-- Tutor e Animal, questão de morar junto
 
 
 
