@@ -1961,11 +1961,11 @@ BEGIN
     OPEN c_clinica ;
     FETCH c_clinica BULK COLLECT INTO v_clinica;
     CLOSE c_clinica;
-    
+    dbms_output.put_line('Relatorio sobre as clinicas');
     dbms_output.put_line(
-        RPAD('NM CLINICA ',12) ||
-        RPAD('Quantidade de VET ',15) ||
-        RPAD(' CONSULTA REALIAZADA',17)
+        RPAD('NM CLINICA ',15) ||
+        RPAD('Quantidade de VET ',20) ||
+        RPAD(' CONSULTA REALIAZADA',20)
     );
     --para diferencia os estados
     FOR i IN 1..v_clinica.COUNT LOOP
@@ -1979,9 +1979,9 @@ BEGIN
             v_consultaRealiazada := v_consultaRealiazada + v_clinica(i).v_realizada;
         END IF;
             dbms_output.put_line(
-                RPAD(v_clinica(i).nm_clinica,8) ||
-                RPAD(v_clinica(i).total_vet,15) ||
-                RPAD(v_clinica(i).v_realizada,17)
+                RPAD(v_clinica(i).nm_clinica,15) ||
+                RPAD(v_clinica(i).total_vet,20) ||
+                RPAD(v_clinica(i).v_realizada,20)
             );
     END LOOP;
     dbms_output.put_line('Sub-Total de '||v_clinica(v_clinica.COUNT).estado||': '||v_consultaRealiazada);
@@ -2022,12 +2022,12 @@ BEGIN
     OPEN c_consulta ;
     FETCH c_consulta BULK COLLECT INTO v_consulta;
     CLOSE c_consulta;
-    
+    dbms_output.put_line('Relatorio Sobre frequencia dos pet');
     dbms_output.put_line(
         RPAD('Nome do paciente ',20) ||
         RPAD('Veteriano ',18) ||
         RPAD('Clinica responsavel ',20) ||
-        RPAD('Clinica Realiazada',20)
+        RPAD('Frequencia',20)
     );
     
     FOR i IN 1..v_consulta.COUNT LOOP
@@ -2055,6 +2055,102 @@ BEGIN
 END;
 
 -- Tutor e Animal, questão de morar junto
+
+DECLARE
+    petRespotavel number := 0;
+    petSozinho number :=0;
+    CURSOR c_animal IS
+    SELECT 
+        a.nm_animal,
+        r.nm_responsavel,
+        ena.bairro as an_bairro,
+        env.bairro as res_bairro
+    FROM T_CLYVO_RESPONSAVEL r
+    INNER JOIN T_CLYVO_ANIMAL a ON r.id_responsavel = a.id_responsavel
+    INNER JOIN T_CLYVO_ENDERECO_RESPONSAVEL env ON r.id_responsavel = env.id_responsavel
+    INNER JOIN  T_CLYVO_ENDERECO_ANIMAL ena ON a.id_animal = ena.id_animal
+    ORDER BY a.nm_animal;
+
+BEGIN
+    dbms_output.put_line('Relatorio Sobre moraria do Responsavel e do PET: ');
+    dbms_output.put_line(
+        RPAD('NM Pet ',20) ||
+        RPAD('Responsavel ',25) ||
+        RPAD('Mesma localização',20)
+    );
+    FOR v_animal IN c_animal LOOP
+        IF v_animal.an_bairro = v_animal.res_bairro THEN
+            dbms_output.put_line(
+                RPAD(v_animal.nm_animal,20) ||
+                RPAD(v_animal.nm_responsavel,25) ||
+                RPAD('SIM',20)
+            );
+            petRespotavel := petRespotavel+1;
+        ELSE
+            dbms_output.put_line(
+                RPAD(v_animal.nm_animal,20) ||
+                RPAD(v_animal.nm_responsavel,25) ||
+                RPAD('Nao',20)
+            );
+            petSozinho := petSozinho+1;
+        END IF;
+    END LOOP;
+    dbms_output.put_line('Pet que vivem com o Responsavel: '||petRespotavel);
+    dbms_output.put_line('Pet que vivem em um lugar diferente do Responsavel: '||petSozinho);
+END;    
+
+
+--log 
+--Relatorio de ocorrencia
+
+
+DECLARE
+    valorSeparado NUMBER := 0;
+    totalGeral NUMBER := 0;
+    CURSOR c_log
+        IS SELECT 
+            id_log,
+            nm_procedure,
+            nm_usuario,
+            dt_ocorrencia,
+            codigo_erro,
+            mensagem_erro
+        FROM LOGS
+        ORDER BY nm_procedure;
+        
+    TYPE t_log IS TABLE OF c_log%ROWTYPE;
+    v_log t_log;
+BEGIN
+    OPEN c_log;
+    FETCH c_log BULK COLLECT INTO v_log;
+    CLOSE c_log;
+    dbms_output.put_line('Relatorio de ocorrencias: ');
+    dbms_output.put_line(
+        RPAD('NM Procedure',20) ||
+        RPAD('Data Ocorrencia',25) ||
+        RPAD('Codigo',15) ||
+        RPAD('MENSAGEM',30)
+    );
+    FOR i IN 1..v_log.COUNT LOOP
+    
+        totalGeral := totalGeral +1;
+        valorSeparado := valorSeparado+1;
+        
+        IF i > 1 AND v_log(i).nm_procedure != v_log(i-1).nm_procedure THEN
+            dbms_output.put_line('Sub-Total de '||v_log(i-1).nm_procedure||': '||(valorSeparado-1));
+             valorSeparado := 1;
+        END IF;
+        dbms_output.put_line(
+        RPAD(v_log(i).nm_procedure,20) ||
+        RPAD(TO_CHAR(v_log(i).dt_ocorrencia, 'DD/MM/YYYY'),20) ||
+        RPAD(v_log(i).codigo_erro,15) ||
+        RPAD(v_log(i).mensagem_erro,30)
+        );  
+    END LOOP;
+    dbms_output.put_line('Sub-Total de '||v_log(v_log.COUNT).nm_procedure||': '||valorSeparado);
+    dbms_output.put_line('Total de ocorrencias: '||totalGeral);
+END;
+    
 
 
 
