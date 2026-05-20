@@ -1871,7 +1871,7 @@ DECLARE
                     END AS v_consulta_realiazada,
                 CASE
                     WHEN 
-                        SUM(CASE WHEN c.st_consulta!='passada' THEN 1 ELSE 0 END)=0 THEN 'Vazio'
+                        SUM(CASE WHEN c.st_consulta='futura' THEN 1 ELSE 0 END)=0 THEN 'Vazio'
                     ELSE
                         TO_CHAR(SUM(CASE WHEN c.st_consulta='futura' THEN 1 ELSE 0 END)) 
                     END AS v_consulta_presentes, 
@@ -1937,11 +1937,10 @@ END;
 DECLARE
 v_consultaRealiazada NUMBER := 0;
 totalGeral NUMBER := 0;
-
 CURSOR c_clinica IS
     SELECT 
         c.nm_clinica,
-        COUNT(DISTINCT vc.id_vet) AS total_vet,
+        COUNT(vc.id_vet) AS total_vet,
         ec.estado,
         SUM(CASE
             WHEN 
@@ -1963,8 +1962,8 @@ BEGIN
     CLOSE c_clinica;
     dbms_output.put_line('Relatorio sobre as clinicas');
     dbms_output.put_line(
-        RPAD('NM CLINICA ',15) ||
-        RPAD('Quantidade de VET ',20) ||
+        RPAD('NM CLINICA ',20) ||
+        RPAD('Quantidade de VET ',25) ||
         RPAD(' CONSULTA REALIAZADA',20)
     );
     --para diferencia os estados
@@ -1979,13 +1978,12 @@ BEGIN
             v_consultaRealiazada := v_consultaRealiazada + v_clinica(i).v_realizada;
         END IF;
             dbms_output.put_line(
-                RPAD(v_clinica(i).nm_clinica,15) ||
-                RPAD(v_clinica(i).total_vet,20) ||
+                RPAD(v_clinica(i).nm_clinica,20) ||
+                RPAD(v_clinica(i).total_vet,25) ||
                 RPAD(v_clinica(i).v_realizada,20)
             );
     END LOOP;
     dbms_output.put_line('Sub-Total de '||v_clinica(v_clinica.COUNT).estado||': '||v_consultaRealiazada);
-
     dbms_output.put_line('Total Geral '||totalGeral);
 END;
 
