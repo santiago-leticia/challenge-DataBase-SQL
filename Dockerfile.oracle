@@ -1,2 +1,0 @@
-FROM gvenzl/oracle-xe:21-slim
-COPY container-entrypoint-initdb.d/ /container-entrypoint-initdb.d/
